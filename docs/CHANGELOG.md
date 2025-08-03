@@ -1,15 +1,53 @@
 # Change Log
 
-## v0.0.1-dev 2025-31-7
+## v0.0.2-dev 2025-08-02
 
 ### Added
-- Press Start Day to generate money
-- Added serve timer so it takes time to get through the customer queue
-- Added stock which you must have to serve
-- Added option to buy stock every day and starting cash
-- Added popularity growth each day to increase customers
-- Customer queue is now displayed on screen
+- Day counter
+- Group spawning
+- Ending early if no customers
+- Customers have patience and will leave early
+
+### Removed
+- Popularity progression
+
+### Updated
+- No changes
+
+### Fixed
+- No changes
+
+## v0.0.1-dev 2025-07-31
+
+### Added
+- Press Start Day to start selling
+- Serve timer so it takes time to get through the customer queue
+- Stock which you must have to serve
+- Option to buy stock every day and starting cash
+- Popularity growth each day to increase customers
+- Customer queue and served count is now displayed on screen
 - Excess stock expires at end of day
+- Day timer and timer display
+
+### Removed
+- No changes
+
+### Updated
+- No changes
 
 ### Fixed
 - Decimal point precision and formatting for cash
+
+
+
+## Template
+
+## v0.0.0-dev 2025-00-00
+
+### Added
+
+### Removed
+
+### Updated
+
+### Fixed

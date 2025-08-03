@@ -1262,6 +1262,7 @@ MonoBehaviour:
   customers_text: {fileID: 1946698213}
   day_timer_text: {fileID: 216464286}
   served_text: {fileID: 1895731031}
+  day_counter_text: {fileID: 866222303}
 --- !u!114 &1239593753
 MonoBehaviour:
   m_ObjectHideFlags: 0
