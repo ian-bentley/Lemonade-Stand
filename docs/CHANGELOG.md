@@ -1,5 +1,19 @@
 # Change Log
 
+## v0.0.3-dev 2025-08-03
+
+### Added
+- Debug screen
+
+### Removed
+- No changes
+
+### Updated
+- Refactored code into new objects
+
+### Fixed
+- No changes
+
 ## v0.0.2-dev 2025-08-02
 
 ### Added

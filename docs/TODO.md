@@ -1,7 +1,6 @@
 # TO DO List
 
 ## Pending Items
-[ ] refactor to group code and variables
 [ ] Attraction stat and upgrade UI which affects popularity
 [ ] Efficiency stat and upgrade UI which affects patience
 [ ] Change price UI
@@ -20,6 +19,8 @@
 [X] Spawn in groups and end when no groups
 [X] Patience
 [X] Tune game so customer count is low and people leave at high rate
+[X] refactor to group code and variables
+[X] Debug screen
 
 ## Future Plans
 - 
