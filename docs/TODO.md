@@ -21,6 +21,7 @@
 [X] Tune game so customer count is low and people leave at high rate
 [X] refactor to group code and variables
 [X] Debug screen
+[X] Update UI
 
 ## Future Plans
 - 

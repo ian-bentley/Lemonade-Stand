@@ -1,5 +1,20 @@
 # Change Log
 
+## v0.0.4-dev 2025-08-07
+
+### Added
+- No changes
+
+### Removed
+- No changes
+
+### Updated
+- Main screen UI
+
+### Fixed
+- Resolution and UI scaling
+
+
 ## v0.0.3-dev 2025-08-03
 
 ### Added
@@ -13,6 +28,7 @@
 
 ### Fixed
 - No changes
+
 
 ## v0.0.2-dev 2025-08-02
 
@@ -30,6 +46,7 @@
 
 ### Fixed
 - No changes
+
 
 ## v0.0.1-dev 2025-07-31
 
