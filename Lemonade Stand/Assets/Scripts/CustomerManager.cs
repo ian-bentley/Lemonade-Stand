@@ -34,12 +34,15 @@ public class CustomerManager
         customer_queue = 0;
         customers_spawned = 0;
         patience_queue = new List<Timer>();
+
+        UIManager.Instance.SetCustomersText(customer_queue);
     }
 
     void SpawnCustomer()
     {
         // add customer to queue
         customer_queue++;
+        UIManager.Instance.SetCustomersText(customer_queue);
 
         // track their patience
         Timer patience_timer = new Timer(customer_patience);
@@ -64,6 +67,12 @@ public class CustomerManager
     {
         customer_queue--; // remove them from the queue
         patience_queue.RemoveAt(index); // stop tracking their patience
+        UIManager.Instance.SetCustomersText(customer_queue);
+    }
+
+    public void DequeueFrontCustomer()
+    {
+        DequeueCustomer(0);
     }
 
     public void Update()

@@ -1,3 +1,5 @@
+using UnityEngine.LightTransport;
+
 public class World
 {
     public const float day_duration = 180f;// how many seconds is one day, set to 180s
@@ -20,6 +22,8 @@ public class World
         day_running = true;
         day_timer.Reset();
         end_early_timer.Reset();
+
+        UIManager.Instance.SetDayTimerText(day_timer.current_time);
     }
 
     public void Update()
@@ -29,5 +33,13 @@ public class World
 
         // end day if day timer or end early timer is up
         if (day_timer.elapsed || end_early_timer.elapsed) day_running = false;
+
+        UIManager.Instance.SetDayTimerText(day_timer.current_time);
+    }
+
+    public void RaiseDayCounter()
+    {
+        day_count++;
+        UIManager.Instance.SetDayCounterText(day_count);
     }
 }

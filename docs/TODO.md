@@ -8,7 +8,7 @@
 [ ] Report screen with basic end stats
 [ ] Hint conditions and hint report
 [ ] customer object and cost preferences / price rejection
-[ ] reipe and preference score, value stat influence on EOD score
+[ ] recipe and preference score, value stat influence on EOD score. Remove cups from BuyLemons
 [ ] location: neighborhood (+pop, +patience, -value), downtown (+pop, -patience, +value)
 [ ] weather: prob table, rng class, normal, rainy (-pop, -patience, -value, -ice), sunny (+pop, 
     -patience, +value, +ice)
@@ -22,6 +22,7 @@
 [X] refactor to group code and variables
 [X] Debug screen
 [X] Update UI
+[X] Hook up new UI to code
 
 ## Future Plans
 - 

@@ -1,5 +1,21 @@
 # Change Log
 
+## v0.0.5-dev 2025-08-09
+
+### Added
+- New Day screen
+
+### Removed
+- No changes
+
+### Updated
+- No changes
+
+### Fixed
+- New Supply Shop adds both lemons and cups
+- New Start button starts the day
+- All panels show in proper order
+
 ## v0.0.4-dev 2025-08-07
 
 ### Added
