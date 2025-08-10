@@ -1,7 +1,10 @@
+using System;
 using UnityEngine;
 
 public class Timer
 {
+    public event Action<float> OnTimerTicked;
+
     public float duration; // how long timer will go
     public float current_time; // what time it's at
     public bool running; // if timer is running
@@ -36,6 +39,8 @@ public class Timer
     }
     public void Tick()
     {
+        OnTimerTicked?.Invoke(current_time);
+
         if (!running) return;
         current_time -= Time.deltaTime; // tick down timer
 

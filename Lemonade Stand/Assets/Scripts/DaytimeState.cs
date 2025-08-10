@@ -6,8 +6,9 @@ public class DaytimeState : GameState
 
     public override void Enter()
     {
-        GameManager.ResetDay();
-        GameManager.StartDayTimers();
+        GameManager.Player.StartDay();
+        GameManager.World.StartDay();
+        GameManager.CustomerManager.StartDay();
     }
 
     public override void Exit()
@@ -40,7 +41,7 @@ public class DaytimeState : GameState
         }
 
         // if serving is done
-        if (GameManager.Player.serving && GameManager.Player.serve_timer.elapsed)
+        if (GameManager.Player.Serving && GameManager.Player.ServeTimer.elapsed)
         {
             GameManager.Player.Serve();
             GameManager.CustomerManager.DequeueFrontCustomer();

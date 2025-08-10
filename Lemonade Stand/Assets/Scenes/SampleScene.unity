@@ -831,7 +831,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2028373938}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_TargetAssemblyTypeName: UIButtonListener, Assembly-CSharp
         m_MethodName: StartButtonClicked
         m_Mode: 1
         m_Arguments:
@@ -3314,7 +3314,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7831405322712918565, guid: 92058557c83d2924cb6ae2b8864e925e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: UIManager, Assembly-CSharp
+      value: UIButtonListener, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7831405322712918565, guid: 92058557c83d2924cb6ae2b8864e925e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
@@ -6312,6 +6312,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2028373937}
   - component: {fileID: 2028373938}
+  - component: {fileID: 2028373939}
   m_Layer: 0
   m_Name: UIManager
   m_TagString: Untagged
@@ -6343,22 +6344,34 @@ MonoBehaviour:
   m_GameObject: {fileID: 2028373936}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8a1585ab8c949f42afe42367503069e, type: 3}
+  m_Script: {fileID: 11500000, guid: 46cc63374d5f54f4caed0c35b89d7880, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2028373939
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2028373936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a20ad9755de0a148ac31c04a40eac5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cash_text: {fileID: 1405858094}
-  price_text: {fileID: 1021890963}
-  customers_text: {fileID: 435972573}
-  day_timer_text: {fileID: 1641132312}
-  served_text: {fileID: 388166970}
   day_counter_text: {fileID: 1396547323}
-  recipe_lemons_count_text: {fileID: 1444576186}
-  recipe_sugar_count_text: {fileID: 1516446674}
-  recipe_ice_count_text: {fileID: 1425616343}
   inventory_lemons_count_text: {fileID: 1011369396}
   inventory_sugar_count_text: {fileID: 1410559627}
   inventory_ice_count_text: {fileID: 141788919}
   inventory_cups_count_text: {fileID: 916317036}
+  price_text: {fileID: 1021890963}
+  recipe_lemons_count_text: {fileID: 1444576186}
+  recipe_sugar_count_text: {fileID: 1516446674}
+  recipe_ice_count_text: {fileID: 1425616343}
+  customers_text: {fileID: 435972573}
+  day_timer_text: {fileID: 1641132312}
+  served_text: {fileID: 388166970}
 --- !u!1 &2078267524
 GameObject:
   m_ObjectHideFlags: 0

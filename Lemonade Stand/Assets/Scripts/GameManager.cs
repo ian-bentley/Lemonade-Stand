@@ -34,28 +34,12 @@ public class GameManager : MonoBehaviour
         StateMachine = new StateMachine();
         StateMachine.ChangeState(new PrepDayState(this));
 
-        UIManager.Instance.OnStartButtonClicked += StartDay;
+        UIButtonListener.Instance.OnStartButtonClicked += StartDay;
     }
 
     private void Update()
     {
         StateMachine.Tick();
-    }
-
-    // resets player, world, and customer manager for the day
-    public void ResetDay()
-    {
-        Player.Reset();
-        World.Reset();
-        CustomerManager.Reset();
-    }
-
-    // start all timers for the day
-    public void StartDayTimers()
-    {
-        Player.serve_timer.Start();
-        World.day_timer.Start();
-        CustomerManager.spawn_delay_timer.Start();
     }
 
     void StartDay()

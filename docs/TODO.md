@@ -23,6 +23,7 @@
 [X] Debug screen
 [X] Update UI
 [X] Hook up new UI to code
+[X] Refactor UI to use events for text changes
 
 ## Future Plans
 - 

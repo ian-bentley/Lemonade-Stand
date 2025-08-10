@@ -3,6 +3,17 @@
 ## v0.0.5-dev 2025-08-09
 
 ### Added
+- No changes
+
+### Removed
+- No changes
+
+### Updated
+- UI for text has been split up and now listens for events
+
+## v0.0.5-dev 2025-08-09
+
+### Added
 - New Day screen
 
 ### Removed

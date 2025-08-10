@@ -1,105 +1,119 @@
-public class Player
-{
-    public decimal price; // how much lemonade costs
-    public decimal cash; // your cash
-    public float serve_interval; // time in seconds to serve, MIN is 1.2
-    public Inventory Inventory { get; private set; } // inventory data
+using System;
+
+public class Player {
+    public static event Action<decimal> OnCashChanged;
+    public static event Action<decimal> OnLemonadePriceChanged;
+    public static event Action<decimal> OnEarningsChanged;
+    public static event Action<int> OnServedChanged;
+
+    private decimal _cash;
+    private decimal _lemonade_price;
+    private decimal _earnings;
+    private int _served;
+
+    public decimal Cash {
+        get => _cash;
+        set {
+            _cash = value;
+            OnCashChanged?.Invoke(_cash);
+        }
+    }
+
+    public decimal LemonadePrice {
+        get => _lemonade_price;
+        set {
+            _lemonade_price = value;
+            OnLemonadePriceChanged?.Invoke(_lemonade_price);
+        }
+    }
+
+    public decimal Earnings { 
+        get => _earnings;
+        private set {
+            _earnings = value;
+            OnEarningsChanged?.Invoke(_earnings);
+        }
+    }
+    public int Served {
+        get => _served;
+        private set {
+            _served = value;
+            OnServedChanged?.Invoke(_served);
+        }
+    }
+
+    public Inventory Inventory { get; private set; }
     public Recipe Recipe { get; set; }
-    public Timer serve_timer; // timer for serve duration
-    public decimal earnings; // tracks earnings for the day
-    public int served; // tracks how many served today
-    public bool serving; // tracks if serving
-    public int servings;
-    public int servings_per_batch = 12;
+    public float ServeInterval { get; private set; } // time in seconds to serve, MIN is 1.2
+    public Timer ServeTimer { get; private set; }
+    public bool Serving { get; private set; } // tracks if serving
+    public int Servings { get; private set; }
+    public int ServingsPerBatch {  get; private set; }
 
-    public Player()
-    {
-        price = 1.50m; // set starting price to $1.50
-        cash = 20m; // set starting cash to $20
-        serve_interval = 3f; // set starting serve interval to 3s
-        Inventory = new Inventory(); // initialize the inventory
-        earnings = 0m; // start at 0 earnings
-        served = 0; // start at 0 served
-        serving = false; // start as not serving
-        serve_timer = new Timer(serve_interval); // set serve timer
-        servings = 0;
-
+    public Player() {
+        Cash = 20m; // set starting cash to $20
+        LemonadePrice = 1.50m; // set starting price to $1.50
+        ServeInterval = 3f; // set starting serve interval to 3s
+        Earnings = 0m; // start at 0 earnings
+        Served = 0; // start at 0 served
+        Serving = false; // start as not serving
+        Servings = 0;
+        ServingsPerBatch = 12;
+        ServeTimer = new Timer(ServeInterval); // set serve timer
+        Inventory = new Inventory();
         Recipe = new Recipe();
+
         Recipe.IncreaseLemons();
-        Recipe.ServingsPerBatch = servings_per_batch;
-
-        UIManager.Instance.SetCashText(cash);
-        UIManager.Instance.SetPriceText(price);
+        Recipe.ServingsPerBatch = ServingsPerBatch;
     }
 
-    public void Reset()
-    {
-        served = 0; // set served back to 0
-        earnings = 0; // set earnings back to 0
-        serve_timer = new Timer(serve_interval); // set serve timer to serve interval
-        serving = false;
+    public void StartDay() {
+        Served = 0; // set served back to 0
 
-        UIManager.Instance.SetServedText(served);
+        Earnings = 0; // set earnings back to 0
+        ServeTimer = new Timer(ServeInterval); // set serve timer to serve interval
+        ServeTimer.Start();
+
+        Serving = false;
     }
 
-    public void StartServing()
-    {
-        serving = true; // start serving
-        serve_timer.Start(); // start serve timer
+    public void StartServing() {
+        Serving = true; // start serving
+        ServeTimer.Start(); // start serve timer
     }
 
-    public void Serve()
-    {
-        serving = false; // stop serving
+    public void Serve() {
+        Serving = false; // stop serving
 
         // make more servings if out
-        if (servings == 0 && Inventory.HasBatchStock(Recipe))
-        {
-            servings = 12;
+        if (Servings == 0 && Inventory.HasBatchStock(Recipe)) {
+            Servings = 12;
             Inventory.UseBatchStock(Recipe);
         }
 
         // if you have a serving, serve
-        if (servings != 0 && Inventory.HasServingStock(Recipe))
-        {
-            servings--; // use a serving
+        if (Servings != 0 && Inventory.HasServingStock(Recipe)) {
+            Servings--; // use a serving
             Inventory.UseServingStock(Recipe);
-            served++; // track they've been served
-            serve_timer.Reset(); // reser serve timer
-            UIManager.Instance.SetServedText(served);
+            Served++; // track they've been served
+            ServeTimer.Reset(); // reser serve timer
 
-            Earn(price);
+            Earn(LemonadePrice);
         }
     }
 
-    public bool CanServe()
-    {
-        return !serving && Inventory.HasServingStock(Recipe);
+    public bool CanServe() => !Serving && Inventory.HasServingStock(Recipe);
+
+    public void Update() {
+        if (Serving) ServeTimer.Tick();
     }
 
-    public void Update()
-    {
-        if (serving)
-        {
-            serve_timer.Tick();
-        }
-    }
+    public bool CanAfford(decimal price) => Cash >= price;
 
-    public bool CanAfford(decimal price)
-    {
-        return cash >= price;
-    }
+    public void Spend(decimal price) => Cash -= price;
 
-    public void Spend(decimal price)
-    {
-        cash -= price;
-        UIManager.Instance.SetCashText(cash);
-    }
-
-    public void Earn(decimal price)
-    {
-        earnings += price; // track earnings gained
-        cash += price; // add price to cash
-        UIManager.Instance.SetCashText(cash);
+    public void Earn(decimal price) {
+        Cash += price;
+        Earnings += price;
     }
 }
