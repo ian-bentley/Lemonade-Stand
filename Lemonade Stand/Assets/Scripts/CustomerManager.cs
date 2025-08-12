@@ -1,102 +1,132 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
-public class CustomerManager
-{
-    public static event Action<int> OnQueueChanged;
-
-    private int _customer_queue;
-
-    public int CustomerQueue {
-        get => _customer_queue;
-        set {
-            _customer_queue = value;
-            OnQueueChanged?.Invoke(_customer_queue);
-        }
-    }
+public class CustomerManager : MonoBehaviour {
+    public static event Action<int, float> OnCustomerAdded;
+    public static event Action<int> OnCustomerRemoved;
+    public static event Action OnNoCustomers;
+    public static event Action OnNextCustomer;
+    public static event Action<float> OnSpawnDelayTimerTicked;
+    public static event Action<float> OnSpawnTimerTicked;
 
     const float customer_base_patience = 5f; // set base patience to 5s
 
-    public Timer spawn_delay_timer; // set spawn delay timer
-    public int max_customers; // max customers that can be spawned for day 
-    public float spawn_duration; // how long spawning will occur for
-    public Timer spawn_timer; // cooldown between spawns
-    public int customers_spawned; // tracks customers spawned
-    public float customer_patience; // customer patience limit
-    public List<Timer> patience_queue; // tracks patience of customers
+    [SerializeField] private Player Player;
+
+    private List<Customer> CustomerQueue;
+    private Timer SpawnDelayTimer { get; set; }
+    private Timer SpawnTimer {  get; set; }
+    private int Popularity => 5 + Player.PlayerStats.Attraction;
+    private int MaxCustomers => Popularity;
+    private float SpawnDuration => 15f;
+    private int CustomersSpawned { get; set; }
+    private float CustomerPatience => customer_base_patience;
+    private int NextId { get; set; }
+
+    private void Start() {
+        CustomerQueue = new List<Customer>();
+        CustomersSpawned = 0; // sets customer spawned to 0 to start
+        NextId = 1; // set ids to start at 1
+
+        CreateTimers();
+
+        World.OnDayStart += StartDay;
+        Player.OnServe += GiveDrinkToFrontCustomer;
+        Customer.OnCustomerLeft += ExitImpatientCustomer;
+    }
+
+    private void Update() {
+        SpawnDelayTimer.Tick();
+        SpawnTimer.Tick();
+
+        // decrease and check customer patience, set to stop at one to avoid ticking patience of first in line
+        for (int i = CustomerQueue.Count - 1; i >= 1; i--) {
+            Customer customer = CustomerQueue[i];
+            customer.Update();
+        }
+    }
+
+    void StartSpawning() {
+        SpawnTimer.Reset();
+        SpawnTimer.Start();
+    }
+
+    void StopUpdating() {
+        enabled = false;
+    }
+
+    void StartUpdating() {
+        enabled = true;
+    }
 
     public void StartDay() {
-        max_customers = 5; // set max customers to 5
-        CustomerQueue = 0; // sets queue to 0 to start
-        customers_spawned = 0; // sets customer spawned to 0 to start
-        customer_patience = customer_base_patience; // set patience to base patience
-        spawn_duration = 5f; // set spawn duration to 5s
-        patience_queue = new List<Timer>(); // initialize patience queue
+        CustomerQueue = new List<Customer>();
+        CustomersSpawned = 0; // sets customer spawned to 0 to start
+        NextId = 1;
 
-        spawn_delay_timer = new Timer(5f);
-        spawn_delay_timer.Start();
+        CreateTimers();
+        SpawnDelayTimer.Start();
+        StartUpdating();
+    }
 
-        float spawn_interval = spawn_duration / max_customers; // set spawn interval to duration over customers
-        spawn_timer = new Timer(spawn_interval); // set spawn timer to spawn interval
+    public void EndDay() {
+        StopUpdating();
+    }
+
+    void CreateTimers() {
+        SpawnDelayTimer = new Timer(5f);
+
+        float spawn_interval = SpawnDuration / MaxCustomers; // set spawn interval to duration over customers
+        SpawnTimer = new Timer(spawn_interval); // set spawn timer to spawn interval
+
+        SpawnDelayTimer.OnTimerTicked += OnSpawnDelayTimerTicked;
+        SpawnTimer.OnTimerTicked += OnSpawnTimerTicked;
+        SpawnDelayTimer.OnTimerElapsed += StartSpawning;
+        SpawnTimer.OnTimerElapsed += SpawnCustomer;
     }
 
     void SpawnCustomer() {
-        // add customer to queue
-        CustomerQueue++;
+        if (CanSpawnMoreCustomers()) {
+            bool wasEmpty = !HasCustomerInQueue();
 
-        // track their patience
-        Timer patience_timer = new Timer(customer_patience);
-        patience_timer.Start();
-        patience_queue.Add(patience_timer);
+            // add customer to queue
+            Customer newCustomer = new Customer(NextId, new Timer(CustomerPatience));
+            CustomerQueue.Add(newCustomer);
+            NextId++;
+            OnCustomerAdded?.Invoke(newCustomer.Id, newCustomer.PatienceTimer.duration);
 
-        // track spawn
-        customers_spawned++;
+            // track spawn
+            CustomersSpawned++;
 
-        // reset spawn timer
-        spawn_timer.Reset();
-        spawn_timer.Start();
+            StartSpawning();
+
+            if (wasEmpty) OnNextCustomer?.Invoke();
+        }
     }
 
-    public bool CanSpawnMoreCustomers() => customers_spawned < max_customers;
+    public bool CanSpawnMoreCustomers() => CustomersSpawned < MaxCustomers;
 
-    public bool HasCustomerInQueue() => CustomerQueue > 0;
-
-    public bool QueueIsEmpty() => CustomerQueue == 0;
+    public bool HasCustomerInQueue() => CustomerQueue.Count > 0;
 
     public void DequeueCustomer(int index) {
-        CustomerQueue--; // remove them from the queue
-        patience_queue.RemoveAt(index); // stop tracking their patience
+        Customer removedCustomer = CustomerQueue.ElementAt(index);
+        OnCustomerRemoved?.Invoke(removedCustomer.Id);
+        CustomerQueue.RemoveAt(index);
+
+        if (!HasCustomerInQueue() && !CanSpawnMoreCustomers()) OnNoCustomers?.Invoke();
     }
 
-    public void DequeueFrontCustomer() => DequeueCustomer(0);
+    public void GiveDrinkToFrontCustomer() {
+        DequeueCustomer(0);
+        if (HasCustomerInQueue()) OnNextCustomer?.Invoke();
+    }
 
-    public void Update() {
-        // tick spawn delay timer
-        spawn_delay_timer.Tick();
-
-        // once delay is up, start spawn timer
-        if (spawn_delay_timer.elapsed && !spawn_timer.running) spawn_timer.Start();
-
-        // if spawn delay is done and not at max customers
-        if (spawn_delay_timer.elapsed && CanSpawnMoreCustomers()){
-            // tick spawn timer
-            spawn_timer.Tick();
-
-            // spawn a customer if timer is up and reset timer
-            if (spawn_timer.elapsed) SpawnCustomer();
-        }
-
-        // decrease and check customer patience
-        for (int i = patience_queue.Count - 1; i >= 0; i--) {
-            Timer patience_timer = patience_queue[i];
-            // front no longer loses patience
-            if (i == 0) continue;
-
-            // tick this patience timer
-            patience_timer.Tick();
-
-            // if patience timer is up
-            if (patience_timer.elapsed) DequeueCustomer(i);
+    public void ExitImpatientCustomer(int id) {
+        for (int i = CustomerQueue.Count - 1; i >= 1; i--) {
+            Customer customer = CustomerQueue[i];
+            if (customer.Id == id) DequeueCustomer(i);
         }
     }
 }

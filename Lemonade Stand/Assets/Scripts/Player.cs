@@ -1,10 +1,13 @@
 using System;
+using UnityEngine;
 
-public class Player {
+public class Player : MonoBehaviour {
     public static event Action<decimal> OnCashChanged;
     public static event Action<decimal> OnLemonadePriceChanged;
     public static event Action<decimal> OnEarningsChanged;
     public static event Action<int> OnServedChanged;
+    public static event Action OnServe;
+    public static event Action<float> OnServeTimerTicked;
 
     private decimal _cash;
     private decimal _lemonade_price;
@@ -43,51 +46,76 @@ public class Player {
     }
 
     public Inventory Inventory { get; private set; }
+    public PlayerStats PlayerStats { get; private set; }
     public Recipe Recipe { get; set; }
-    public float ServeInterval { get; private set; } // time in seconds to serve, MIN is 1.2
     public Timer ServeTimer { get; private set; }
-    public bool Serving { get; private set; } // tracks if serving
+    public float ServeInterval { get; private set; } // time in seconds to serve, MIN is 1.2
     public int Servings { get; private set; }
     public int ServingsPerBatch {  get; private set; }
 
-    public Player() {
+    private void Start() {
         Cash = 20m; // set starting cash to $20
         LemonadePrice = 1.50m; // set starting price to $1.50
         ServeInterval = 3f; // set starting serve interval to 3s
         Earnings = 0m; // start at 0 earnings
         Served = 0; // start at 0 served
-        Serving = false; // start as not serving
         Servings = 0;
         ServingsPerBatch = 12;
-        ServeTimer = new Timer(ServeInterval); // set serve timer
         Inventory = new Inventory();
+        PlayerStats = new PlayerStats();
         Recipe = new Recipe();
 
         Recipe.IncreaseLemons();
         Recipe.ServingsPerBatch = ServingsPerBatch;
+
+        CreateTimers();
+
+        World.OnDayStart += StartDay;
+        World.OnDayEnd += Inventory.ExpireStock;
+        CustomerManager.OnNextCustomer += StartServing;
+        SupplyShop.OnPurchaseRequested += TryPurchase;
+    }
+
+    private void Update() {
+        ServeTimer.Tick();
+    }
+
+    void StopUpdating() {
+        enabled = false;
+    }
+
+    void StartUpdating() {
+        enabled = true;
+    }
+
+    void CreateTimers() {
+        ServeTimer = new Timer(ServeInterval);
+        ServeTimer.OnTimerElapsed += Serve;
+        ServeTimer.OnTimerTicked += OnServeTimerTicked;
     }
 
     public void StartDay() {
-        Served = 0; // set served back to 0
+        Served = 0;
+        Earnings = 0;
 
-        Earnings = 0; // set earnings back to 0
-        ServeTimer = new Timer(ServeInterval); // set serve timer to serve interval
-        ServeTimer.Start();
+        CreateTimers();
+        StartUpdating();
+    }
 
-        Serving = false;
+    public void EndDay() {
+        StopUpdating();
     }
 
     public void StartServing() {
-        Serving = true; // start serving
-        ServeTimer.Start(); // start serve timer
+        ServeTimer.Reset();
+        ServeTimer.Start();
     }
 
     public void Serve() {
-        Serving = false; // stop serving
 
         // make more servings if out
         if (Servings == 0 && Inventory.HasBatchStock(Recipe)) {
-            Servings = 12;
+            Servings = ServingsPerBatch;
             Inventory.UseBatchStock(Recipe);
         }
 
@@ -96,16 +124,10 @@ public class Player {
             Servings--; // use a serving
             Inventory.UseServingStock(Recipe);
             Served++; // track they've been served
-            ServeTimer.Reset(); // reser serve timer
 
             Earn(LemonadePrice);
+            OnServe?.Invoke();
         }
-    }
-
-    public bool CanServe() => !Serving && Inventory.HasServingStock(Recipe);
-
-    public void Update() {
-        if (Serving) ServeTimer.Tick();
     }
 
     public bool CanAfford(decimal price) => Cash >= price;
@@ -115,5 +137,17 @@ public class Player {
     public void Earn(decimal price) {
         Cash += price;
         Earnings += price;
+    }
+
+    public void TryPurchase(PurchaseRequest purchaseRequest) {
+        if (CanAfford(purchaseRequest.Price)) {
+
+            Spend(purchaseRequest.Price);
+
+            if (purchaseRequest.ItemType == ItemType.Lemon) Inventory.AddLemons(purchaseRequest.Amount);
+            if (purchaseRequest.ItemType == ItemType.Sugar) Inventory.AddSugar(purchaseRequest.Amount);
+            if (purchaseRequest.ItemType == ItemType.Ice) Inventory.AddIce(purchaseRequest.Amount);
+            if (purchaseRequest.ItemType == ItemType.Cups) Inventory.AddCups(purchaseRequest.Amount);
+        }
     }
 }

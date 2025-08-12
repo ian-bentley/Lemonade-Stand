@@ -31,15 +31,12 @@ public class UITextUpdater : MonoBehaviour
     [SerializeField] public TextMeshProUGUI recipe_ice_count_text;
 
     // daytime text
-    [SerializeField] public TextMeshProUGUI customers_text;
     [SerializeField] public TextMeshProUGUI day_timer_text;
-    [SerializeField] public TextMeshProUGUI served_text;
 
     private void OnEnable() {
         // subscribe
         Player.OnCashChanged += SetCashText;
         Player.OnLemonadePriceChanged += SetPriceText;
-        Player.OnServedChanged += SetServedText;
         Inventory.OnLemonsCountChanged += SetInventoryLemonsCountText;
         Inventory.OnSugarCountChanged += SetInventorySugarCountText;
         Inventory.OnIceCountChanged += SetInventoryIceCountText;
@@ -49,7 +46,6 @@ public class UITextUpdater : MonoBehaviour
         Recipe.OnIceCountChanged += SetRecipeIceCountText;
         World.OnDayCountChanged += SetDayCounterText;
         World.OnDayTimerTicked += SetDayTimerText;
-        CustomerManager.OnQueueChanged += SetCustomersText;
 
     }
 
@@ -57,7 +53,6 @@ public class UITextUpdater : MonoBehaviour
         // unsubscribe
         Player.OnCashChanged -= SetCashText;
         Player.OnLemonadePriceChanged -= SetPriceText;
-        Player.OnServedChanged -= SetServedText;
         Inventory.OnLemonsCountChanged -= SetInventoryLemonsCountText;
         Inventory.OnSugarCountChanged -= SetInventorySugarCountText;
         Inventory.OnIceCountChanged -= SetInventoryIceCountText;
@@ -66,8 +61,7 @@ public class UITextUpdater : MonoBehaviour
         Recipe.OnSugarCountChanged -= SetRecipeSugarCountText;
         Recipe.OnIceCountChanged -= SetRecipeIceCountText;
         World.OnDayCountChanged -= SetDayCounterText;
-        GameManager.Instance.World.DayTimer.OnTimerTicked -= SetDayTimerText;
-        CustomerManager.OnQueueChanged -= SetCustomersText;
+        World.OnDayTimerTicked -= SetDayTimerText;
     }
 
     // common text updaters
@@ -85,7 +79,5 @@ public class UITextUpdater : MonoBehaviour
     public void SetRecipeIceCountText(int ice_count) => recipe_ice_count_text.text = $"{ice_count}";
 
     // daytime text updaters
-    public void SetCustomersText(int customers) => customers_text.text = $"Customers: {customers}";
     public void SetDayTimerText(float day_timer_duration) => day_timer_text.text = $"{day_timer_duration}";
-    public void SetServedText(int served) =>  served_text.text = $"Served: {served}";
 }

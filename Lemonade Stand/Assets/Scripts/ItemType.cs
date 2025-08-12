@@ -1,0 +1,1 @@
+public enum ItemType { Lemon, Sugar, Ice, Cups }

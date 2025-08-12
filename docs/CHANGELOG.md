@@ -1,5 +1,21 @@
 # Change Log
 
+## v0.0.6-dev 2025-08-12
+
+### Added
+- New attraction stat to affect new popularity stat
+
+### Removed
+- No changes
+
+### Updated
+- Debug tool now use events
+- Switched daytime and timer logic to event-based
+
+### Fixed
+- Patience timers tracking wrong
+- Wrong customer leaving queue from patience
+
 ## v0.0.5-dev 2025-08-09
 
 ### Added
@@ -10,6 +26,9 @@
 
 ### Updated
 - UI for text has been split up and now listens for events
+
+### Fixed
+- No changes
 
 ## v0.0.5-dev 2025-08-09
 

@@ -48,7 +48,7 @@ public class Inventory
         LemonsCount = 0;
         SugarCount = 0;
         IceCount = 0;
-        CupsCount = 0;
+        CupsCount = 999;
     }
 
     public bool HasBatchStock(Recipe recipe) => LemonsCount >= recipe.LemonsCount && SugarCount >= recipe.SugarCount;

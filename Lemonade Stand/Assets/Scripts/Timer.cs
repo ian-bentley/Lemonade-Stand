@@ -4,6 +4,7 @@ using UnityEngine;
 public class Timer
 {
     public event Action<float> OnTimerTicked;
+    public event Action OnTimerElapsed;
 
     public float duration; // how long timer will go
     public float current_time; // what time it's at
@@ -18,36 +19,25 @@ public class Timer
         current_time = duration;
     }
 
-    public void Start()
-    {
-        if (running) return;
-        running = true; // start running timer
-    }
-    public void Stop() => running = false; // stop running timer
+    public void Start() => running = true;
+    public void Stop() => running = false;
     public void Reset()
     {
-        // if elapsed add back duration and set to not elapsed
-        if (elapsed)
-        {
-            current_time += duration;
-            elapsed = false;
-            return;
-        }
-
-        // otherwise just set to duration
         current_time = duration;
+        elapsed = false;
     }
     public void Tick()
     {
-        OnTimerTicked?.Invoke(current_time);
-
         if (!running) return;
+
         current_time -= Time.deltaTime; // tick down timer
+        OnTimerTicked?.Invoke(current_time);
 
         if (current_time > 0f) return;
 
         // if time has elapsed
-        elapsed = true;
         Stop();
+        elapsed = true;
+        OnTimerElapsed?.Invoke();
     }
 }

@@ -14,8 +14,8 @@ public class UIButtonListener : MonoBehaviour {
         DontDestroyOnLoad(gameObject);
     }
 
-    public event Action OnSupplyShopButtonClicked;
-    public event Action OnStartButtonClicked;
+    public static event Action OnSupplyShopButtonClicked;
+    public static event Action OnStartButtonClicked;
 
     public void SupplyShopButtonClicked() {
         OnSupplyShopButtonClicked?.Invoke();

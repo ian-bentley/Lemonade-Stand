@@ -1,7 +1,10 @@
 # TO DO List
 
 ## Pending Items
-[ ] Attraction stat and upgrade UI which affects popularity
+[ ] Convert to properties
+[ ] Make sure objects are reacting to their timers with events
+[ ] Change spawning to waves: amount in wave, duration, cooldown
+[ ] Upgrade UI for Attraction
 [ ] Efficiency stat and upgrade UI which affects patience
 [ ] Change price UI
 [ ] Reputation stat and upgrade UI which affects value
@@ -24,6 +27,7 @@
 [X] Update UI
 [X] Hook up new UI to code
 [X] Refactor UI to use events for text changes
+[X] Attraction stat which affects popularity
 
 ## Future Plans
 - 
