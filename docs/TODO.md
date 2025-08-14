@@ -28,6 +28,7 @@
 [X] Hook up new UI to code
 [X] Refactor UI to use events for text changes
 [X] Attraction stat which affects popularity
+[X] Developer console
 
 ## Future Plans
 - 

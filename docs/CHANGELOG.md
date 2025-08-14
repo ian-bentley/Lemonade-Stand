@@ -1,5 +1,19 @@
 # Change Log
 
+## v0.0.7-dev 2025-08-13
+
+### Added
+- Developer console and set command
+
+### Removed
+- No changes
+
+### Updated
+- No changes
+
+### Fixed
+- No changes
+
 ## v0.0.6-dev 2025-08-12
 
 ### Added

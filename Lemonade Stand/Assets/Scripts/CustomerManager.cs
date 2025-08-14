@@ -10,6 +10,7 @@ public class CustomerManager : MonoBehaviour {
     public static event Action OnNextCustomer;
     public static event Action<float> OnSpawnDelayTimerTicked;
     public static event Action<float> OnSpawnTimerTicked;
+    public static event Action OnCustomerServed;
 
     const float customer_base_patience = 5f; // set base patience to 5s
 
@@ -20,7 +21,7 @@ public class CustomerManager : MonoBehaviour {
     private Timer SpawnTimer {  get; set; }
     private int Popularity => 5 + Player.PlayerStats.Attraction;
     private int MaxCustomers => Popularity;
-    private float SpawnDuration => 15f;
+    private float SpawnDuration => Popularity;
     private int CustomersSpawned { get; set; }
     private float CustomerPatience => customer_base_patience;
     private int NextId { get; set; }
@@ -119,6 +120,7 @@ public class CustomerManager : MonoBehaviour {
     }
 
     public void GiveDrinkToFrontCustomer() {
+        OnCustomerServed?.Invoke();
         DequeueCustomer(0);
         if (HasCustomerInQueue()) OnNextCustomer?.Invoke();
     }

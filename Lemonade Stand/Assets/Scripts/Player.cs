@@ -8,6 +8,7 @@ public class Player : MonoBehaviour {
     public static event Action<int> OnServedChanged;
     public static event Action OnServe;
     public static event Action<float> OnServeTimerTicked;
+    public static event Action OnPaid;
 
     private decimal _cash;
     private decimal _lemonade_price;
@@ -18,6 +19,8 @@ public class Player : MonoBehaviour {
         get => _cash;
         set {
             _cash = value;
+            if (value < 0m) _cash = 0;
+            if (value > 999999999999.99m) _cash = 999999999999.99m;
             OnCashChanged?.Invoke(_cash);
         }
     }
@@ -26,6 +29,8 @@ public class Player : MonoBehaviour {
         get => _lemonade_price;
         set {
             _lemonade_price = value;
+            if (value < 0m) _lemonade_price = 0;
+            if (value > 9.99m) _lemonade_price = 9.99m;
             OnLemonadePriceChanged?.Invoke(_lemonade_price);
         }
     }
@@ -109,6 +114,7 @@ public class Player : MonoBehaviour {
     public void StartServing() {
         ServeTimer.Reset();
         ServeTimer.Start();
+        Earn(LemonadePrice);
     }
 
     public void Serve() {
@@ -124,8 +130,6 @@ public class Player : MonoBehaviour {
             Servings--; // use a serving
             Inventory.UseServingStock(Recipe);
             Served++; // track they've been served
-
-            Earn(LemonadePrice);
             OnServe?.Invoke();
         }
     }
@@ -137,6 +141,7 @@ public class Player : MonoBehaviour {
     public void Earn(decimal price) {
         Cash += price;
         Earnings += price;
+        OnPaid?.Invoke();
     }
 
     public void TryPurchase(PurchaseRequest purchaseRequest) {

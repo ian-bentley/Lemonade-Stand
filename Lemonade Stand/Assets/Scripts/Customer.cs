@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class Customer
 {
-    public static event Action<float> OnPatienceTimerTickedWrapper;
     public static event Action<int, float> OnPatienceTimerTicked;
     public static event Action OnPatienceTimerElapsed;
     public static event Action<int> OnCustomerLeft;
