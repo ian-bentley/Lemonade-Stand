@@ -4,8 +4,8 @@ using UnityEngine;
 public class Customer
 {
     public static event Action<int, float> OnPatienceTimerTicked;
-    public static event Action OnPatienceTimerElapsed;
     public static event Action<int> OnCustomerLeft;
+    public event Action<Customer> Leave;
 
     public int Id { get; }
     public Timer PatienceTimer { get; }
@@ -17,14 +17,16 @@ public class Customer
 
         PatienceTimer.OnTimerTicked += currentTime => OnPatienceTimerTicked?.Invoke(Id, currentTime);
         PatienceTimer.OnTimerElapsed += OnPatienceTimerElapsed;
-        PatienceTimer.OnTimerElapsed += Leave;
+        //PatienceTimer.OnTimerElapsed += Leave;
     }
 
     public void Update() {
         PatienceTimer.Tick();
     }
 
-    private void Leave() {
+    private void LeaveQueue() {
         OnCustomerLeft?.Invoke(Id);
     }
+
+    public void OnPatienceTimerElapsed() => Leave?.Invoke(this);
 }

@@ -1,9 +1,24 @@
 # Change Log
 
-## v0.0.7-dev 2025-08-13
+## v0.0.9-dev 2025-08-14
+
+### Added
+- No changes
+
+### Removed
+- No changes
+
+### Updated
+- Daytime Scene to use real sprites
+
+### Fixed
+- No changes
+
+## v0.0.8-dev 2025-08-13
 
 ### Added
 - Developer console and set command
+- Menu and gameplay sounds
 
 ### Removed
 - No changes
@@ -14,7 +29,8 @@
 ### Fixed
 - No changes
 
-## v0.0.6-dev 2025-08-12
+
+## v0.0.7-dev 2025-08-12
 
 ### Added
 - New attraction stat to affect new popularity stat
@@ -30,7 +46,8 @@
 - Patience timers tracking wrong
 - Wrong customer leaving queue from patience
 
-## v0.0.5-dev 2025-08-09
+
+## v0.0.6-dev 2025-08-09
 
 ### Added
 - No changes
@@ -43,6 +60,7 @@
 
 ### Fixed
 - No changes
+
 
 ## v0.0.5-dev 2025-08-09
 
@@ -59,6 +77,7 @@
 - New Supply Shop adds both lemons and cups
 - New Start button starts the day
 - All panels show in proper order
+
 
 ## v0.0.4-dev 2025-08-07
 

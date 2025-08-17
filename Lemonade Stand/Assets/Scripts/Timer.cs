@@ -26,6 +26,12 @@ public class Timer
         current_time = duration;
         elapsed = false;
     }
+
+    public void Restart() {
+        Reset();
+        Start();
+    }
+
     public void Tick()
     {
         if (!running) return;
