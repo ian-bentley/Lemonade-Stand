@@ -28,7 +28,8 @@ public class World : MonoBehaviour {
         CreateTimers();
 
         UIButtonListener.OnStartButtonClicked += StartDay;
-        CustomerManager.OnNoCustomers += EndEarly;
+        CustomerSpawner.NoCustomers += EndEarly;
+        Player.OutOfStock += EndEarly;
     }
 
     private void Update() {

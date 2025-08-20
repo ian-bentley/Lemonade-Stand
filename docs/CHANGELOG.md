@@ -1,9 +1,26 @@
 # Change Log
 
-## v0.0.9-dev 2025-08-14
+## v0.0.10-dev 2025-08-20
+### Added
+- Visualizer for customer node and position
+- Customer animations
+
+### Removed
+- No changes
+
+### Updated
+- No changes
+
+### Fixed
+- Customer LeftWalk animation playing on end and start
+- Player not forgetting customer at end of day
+- Customer pool wrongly assigning an active controller
+- Customer visible briefly when spawning
+
+## v0.0.9-dev 2025-08-17
 
 ### Added
-- No changes
+- Customer visual management
 
 ### Removed
 - No changes

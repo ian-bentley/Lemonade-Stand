@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 public class CustomerQueue {
     public static event Action<IReadOnlyList<Customer>> QueueChanged;
+    public static event Action<string, float> CustomerAdded;
+    public static event Action<string> CustomerRemoved;
 
     private List<Customer> Customers;
 
@@ -13,11 +14,13 @@ public class CustomerQueue {
     }
 
     public int Count => Customers.Count;
+    public bool HasCustomerInQueue => Customers.Count > 0;
 
-    private void OnCustomerLeave(Customer customer) => Dequeue(customer);
+    private void OnCustomerLeave(Customer customer) => ExitCustomerFromPatience(customer);
+    private void OnCustomerReceiveDrink(Customer customer) => ExitCustomerFromServed(customer);
 
     public void Update() {
-        for (int i = Customers.Count - 1; i >= 0; i--) {
+        for (int i = Customers.Count - 1; i >= 1; i--) {
             Customer customer = Customers[i];
             customer.Update();
         }
@@ -26,14 +29,28 @@ public class CustomerQueue {
     public void Enqueue(Customer customer) {
         Customers.Add(customer);
         customer.Leave += OnCustomerLeave;
+        customer.ReceiveDrink += OnCustomerReceiveDrink;
         QueueChanged?.Invoke(Customers);
+        CustomerAdded?.Invoke(customer.Id, customer.PatienceTimer.current_time);
     }
 
     private void Dequeue(Customer customer) {
         customer.Leave -= OnCustomerLeave;
+        customer.ReceiveDrink -= OnCustomerReceiveDrink;
         Customers.Remove(customer);
         QueueChanged?.Invoke(Customers);
+        CustomerRemoved?.Invoke(customer.Id);
     }
 
     public Customer ElementAt(int index) => Customers.ElementAt(index);
+
+    private void ExitCustomerFromPatience(Customer customer) => Dequeue(customer);
+    private void ExitCustomerFromServed(Customer customer) => Dequeue(customer);
+
+    public void UnbindCustomers() {
+        foreach (Customer customer in Customers) {
+            customer.Leave -= OnCustomerLeave;
+            customer.ReceiveDrink -= OnCustomerReceiveDrink;
+        }
+    }
 }

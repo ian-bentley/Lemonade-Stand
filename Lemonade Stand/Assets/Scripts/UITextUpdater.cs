@@ -18,7 +18,6 @@ public class UITextUpdater : MonoBehaviour
 
     // common text
     [SerializeField] public TextMeshProUGUI cash_text;
-    [SerializeField] public TextMeshProUGUI day_counter_text;
     [SerializeField] public TextMeshProUGUI inventory_lemons_count_text;
     [SerializeField] public TextMeshProUGUI inventory_sugar_count_text;
     [SerializeField] public TextMeshProUGUI inventory_ice_count_text;
@@ -31,7 +30,7 @@ public class UITextUpdater : MonoBehaviour
     [SerializeField] public TextMeshProUGUI recipe_ice_count_text;
 
     // daytime text
-    [SerializeField] public TextMeshProUGUI day_timer_text;
+    //[SerializeField] public TextMeshProUGUI day_timer_text;
 
     private void OnEnable() {
         // subscribe
@@ -44,8 +43,8 @@ public class UITextUpdater : MonoBehaviour
         Recipe.OnLemonsCountChanged += SetRecipeLemonsCountText;
         Recipe.OnSugarCountChanged += SetRecipeSugarCountText;
         Recipe.OnIceCountChanged += SetRecipeIceCountText;
-        World.OnDayCountChanged += SetDayCounterText;
-        World.OnDayTimerTicked += SetDayTimerText;
+        //World.OnDayCountChanged += SetDayCounterText;
+        //World.OnDayTimerTicked += SetDayTimerText;
 
     }
 
@@ -60,13 +59,12 @@ public class UITextUpdater : MonoBehaviour
         Recipe.OnLemonsCountChanged -= SetRecipeLemonsCountText;
         Recipe.OnSugarCountChanged -= SetRecipeSugarCountText;
         Recipe.OnIceCountChanged -= SetRecipeIceCountText;
-        World.OnDayCountChanged -= SetDayCounterText;
-        World.OnDayTimerTicked -= SetDayTimerText;
+        //World.OnDayCountChanged -= SetDayCounterText;
+        //World.OnDayTimerTicked -= SetDayTimerText;
     }
 
     // common text updaters
     public void SetCashText(decimal cash) => cash_text.text = $"{cash:C}";
-    public void SetDayCounterText(int day_count) => day_counter_text.text = $"Day: {day_count}";
     public void SetInventoryLemonsCountText(int lemons_count) => inventory_lemons_count_text.text = $"{lemons_count}";
     public void SetInventorySugarCountText(int sugar_count) => inventory_sugar_count_text.text = $"{sugar_count}";
     public void SetInventoryIceCountText(int ice_count) => inventory_ice_count_text.text = $"{ice_count}";
@@ -79,5 +77,5 @@ public class UITextUpdater : MonoBehaviour
     public void SetRecipeIceCountText(int ice_count) => recipe_ice_count_text.text = $"{ice_count}";
 
     // daytime text updaters
-    public void SetDayTimerText(float day_timer_duration) => day_timer_text.text = $"{day_timer_duration}";
+    //public void SetDayTimerText(float day_timer_duration) => day_timer_text.text = $"{day_timer_duration}";
 }

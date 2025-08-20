@@ -8,19 +8,25 @@ public class CustomerPool : MonoBehaviour {
 
     private List<CustomerController> CustomerControllers;
 
+    private void OnEnable() {
+        World.OnDayStart += OnDayStart;
+    }
+
+    private void OnDisable() {
+        World.OnDayStart -= OnDayStart;
+    }
+
     private void Awake() {
         CustomerControllers = new List<CustomerController>();
-
-        for (int i = 0; i < InitialSize; i++) {
-            IncreasePool();
-        }
     }
 
     public CustomerController GetAvailableCustomerController() {
 
         foreach (CustomerController customerController in CustomerControllers) {
             if (customerController.gameObject.activeInHierarchy) continue;
+            customerController.transform.position = Vector3.zero;
             customerController.Activate();
+            customerController.EnableCollision();
             return customerController;
         }
 
@@ -31,6 +37,7 @@ public class CustomerPool : MonoBehaviour {
 
         CustomerController createdController = CustomerControllers[nextIndex];
         createdController.Activate();
+        createdController.EnableCollision();
         return createdController;
     }
 
@@ -38,5 +45,17 @@ public class CustomerPool : MonoBehaviour {
         CustomerController customerController = Instantiate(Prefab, transform, false);
         customerController.gameObject.SetActive(false);
         CustomerControllers.Add(customerController);
+    }
+
+    private void OnDayStart() {
+        foreach (CustomerController customerController in CustomerControllers) {
+            customerController.Deactivate();
+        }
+
+        CustomerControllers = new List<CustomerController>();
+
+        for (int i = 0; i < InitialSize; i++) {
+            IncreasePool();
+        }
     }
 }

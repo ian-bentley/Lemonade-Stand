@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
 
@@ -16,7 +15,7 @@ public class DebugTool : MonoBehaviour
     string spawn_delay_timer_text;
     string spawn_timer_text;
     string serve_timer_text;
-    Dictionary<int, float> patience_timers;
+    Dictionary<string, float> patience_timers;
 
     private void OnEnable() {
         Player.OnServedChanged += SetServedText;
@@ -24,24 +23,25 @@ public class DebugTool : MonoBehaviour
         Player.OnServeTimerTicked += SetServeTimerText;
         World.OnDayTimerTicked += SetDayTimerText;
         World.OnEndEarlyTimerTicked += SetEndEarlyTimerText;
-        CustomerManager.OnSpawnDelayTimerTicked += SetSpawnDelayTimerText;
-        CustomerManager.OnSpawnTimerTicked += SetSpawnTimerText;
-        CustomerManager.OnCustomerAdded += AddPatienceTimer;
-        CustomerManager.OnCustomerRemoved += RemovePatienceTimer;
+        World.OnDayStart += ClearPatienceTimers;
+        CustomerSpawner.SpawnDelayTimerTicked += SetSpawnDelayTimerText;
+        CustomerSpawner.SpawnTimerTicked += SetSpawnTimerText;
+        CustomerQueue.CustomerAdded += AddPatienceTimer;
+        CustomerQueue.CustomerRemoved += RemovePatienceTimer;
         Customer.OnPatienceTimerTicked += SetPatienceTimer;
     }
 
     private void OnDisable() {
-        Player.OnServedChanged -= SetServedText;
-        Player.OnEarningsChanged -= SetEarningsText;
-        Player.OnServeTimerTicked -= SetServeTimerText;
-        World.OnDayTimerTicked -= SetDayTimerText;
-        World.OnEndEarlyTimerTicked -= SetEndEarlyTimerText;
-        CustomerManager.OnSpawnDelayTimerTicked -= SetSpawnDelayTimerText;
-        CustomerManager.OnSpawnTimerTicked -= SetSpawnTimerText;
-        CustomerManager.OnCustomerAdded -= AddPatienceTimer;
-        CustomerManager.OnCustomerRemoved -= RemovePatienceTimer;
-        Customer.OnPatienceTimerTicked -= SetPatienceTimer;
+        Player.OnServedChanged += SetServedText;
+        Player.OnEarningsChanged += SetEarningsText;
+        Player.OnServeTimerTicked += SetServeTimerText;
+        World.OnDayTimerTicked += SetDayTimerText;
+        World.OnEndEarlyTimerTicked += SetEndEarlyTimerText;
+        CustomerSpawner.SpawnDelayTimerTicked += SetSpawnDelayTimerText;
+        CustomerSpawner.SpawnTimerTicked += SetSpawnTimerText;
+        CustomerQueue.CustomerAdded += AddPatienceTimer;
+        CustomerQueue.CustomerRemoved += RemovePatienceTimer;
+        Customer.OnPatienceTimerTicked += SetPatienceTimer;
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -49,7 +49,7 @@ public class DebugTool : MonoBehaviour
         debug_canvas.SetActive(false);
         debug_on = false;
 
-        patience_timers = new Dictionary<int, float>();
+        patience_timers = new Dictionary<string, float>();
     }
 
     // Update is called once per frame
@@ -86,15 +86,17 @@ public class DebugTool : MonoBehaviour
     void SetSpawnTimerText(float currentTime) => spawn_timer_text = $"Spawn timer: {currentTime} \n";
     void SetServeTimerText(float currentTime) => serve_timer_text = $"Serve timer: {currentTime}\n";
 
-    void AddPatienceTimer(int id, float currentTime) {
+    void AddPatienceTimer(string id, float currentTime) {
         patience_timers.Add(id, currentTime);
     }
 
-    void RemovePatienceTimer(int id) {
+    void RemovePatienceTimer(string id) {
         patience_timers.Remove(id);
     }
 
-    void SetPatienceTimer(int id, float currentTime) {
+    void SetPatienceTimer(string id, float currentTime) {
         patience_timers[id] = currentTime;
     }
+
+    void ClearPatienceTimers() => patience_timers = new Dictionary<string, float>();
 }

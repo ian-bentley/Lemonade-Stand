@@ -9,6 +9,7 @@ public class Player : MonoBehaviour {
     public static event Action OnServe;
     public static event Action<float> OnServeTimerTicked;
     public static event Action OnPaid;
+    public static event Action OutOfStock;
 
     private decimal _cash;
     private decimal _lemonade_price;
@@ -57,6 +58,7 @@ public class Player : MonoBehaviour {
     public float ServeInterval { get; private set; } // time in seconds to serve, MIN is 1.2
     public int Servings { get; private set; }
     public int ServingsPerBatch {  get; private set; }
+    private Customer ServingCustomer { get; set; }
 
     private void Start() {
         Cash = 20m; // set starting cash to $20
@@ -70,15 +72,15 @@ public class Player : MonoBehaviour {
         PlayerStats = new PlayerStats();
         Recipe = new Recipe();
 
-        Recipe.IncreaseLemons();
         Recipe.ServingsPerBatch = ServingsPerBatch;
 
         CreateTimers();
 
         World.OnDayStart += StartDay;
         World.OnDayEnd += Inventory.ExpireStock;
-        CustomerManager.OnNextCustomer += StartServing;
+        World.OnDayEnd += EndDay;
         SupplyShop.OnPurchaseRequested += TryPurchase;
+        Customer.Order += StartServing;
     }
 
     private void Update() {
@@ -102,16 +104,22 @@ public class Player : MonoBehaviour {
     public void StartDay() {
         Served = 0;
         Earnings = 0;
+        Servings = 0;
+        Inventory.CupsCount = 999;
 
         CreateTimers();
         StartUpdating();
     }
 
     public void EndDay() {
+        OnServe -= ServingCustomer.OnPlayerServe;
+        ServingCustomer = null;
         StopUpdating();
     }
 
-    public void StartServing() {
+    public void StartServing(Customer customer) {
+        ServingCustomer = customer;
+        OnServe += ServingCustomer.OnPlayerServe;
         ServeTimer.Reset();
         ServeTimer.Start();
         Earn(LemonadePrice);
@@ -125,12 +133,16 @@ public class Player : MonoBehaviour {
             Inventory.UseBatchStock(Recipe);
         }
 
+        if (Servings == 0 && !Inventory.HasBatchStock(Recipe)) OutOfStock?.Invoke();
+
         // if you have a serving, serve
         if (Servings != 0 && Inventory.HasServingStock(Recipe)) {
             Servings--; // use a serving
             Inventory.UseServingStock(Recipe);
             Served++; // track they've been served
             OnServe?.Invoke();
+            OnServe -= ServingCustomer.OnPlayerServe;
+            ServingCustomer = null;
         }
     }
 

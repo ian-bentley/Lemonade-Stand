@@ -61,8 +61,8 @@ public class DevConsole : MonoBehaviour {
     private void SetCommand(string[] args) {
         Dictionary<string, Action<int>> names = new Dictionary<string, Action<int>> {
             { "lemons", SetLemons },
-            { "sugar", SetSugar },
-            { "ice", SetIce },
+            //{ "sugar", SetSugar },
+            //{ "ice", SetIce },
             { "cups", SetCups },
             { "cash", SetCash },
             { "attraction", SetAttraction }
@@ -100,8 +100,8 @@ public class DevConsole : MonoBehaviour {
     }
 
     private void SetLemons(int amount) => player.Inventory.LemonsCount = amount;
-    private void SetSugar(int amount) => player.Inventory.SugarCount = amount;
-    private void SetIce(int amount) => player.Inventory.IceCount = amount;
+    //private void SetSugar(int amount) => player.Inventory.SugarCount = amount;
+    //private void SetIce(int amount) => player.Inventory.IceCount = amount;
     private void SetCups(int amount) => player.Inventory.CupsCount = amount;
     private void SetCash(int amount) => player.Cash = (decimal) amount;
     private void SetAttraction(int amount) => player.PlayerStats.Attraction = amount; 

@@ -8,18 +8,18 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip buy_clip;
     [SerializeField] private AudioClip pay_clip;
     [SerializeField] private AudioClip leave_clip;
-    [SerializeField] private AudioClip increase_clip;
-    [SerializeField] private AudioClip decrease_clip;
+    //[SerializeField] private AudioClip increase_clip;
+    //[SerializeField] private AudioClip decrease_clip;
     [SerializeField] private AudioClip liked_clip;
 
     private void OnEnable() {
         UIButtonListener.OnMenuButtonClicked += PlayButtonSound;
         UIButtonListener.OnBuyButtonClicked += PlayBuySound;
-        UIButtonListener.OnIncreaseButtonClicked += PlayIncreaseSound;
-        UIButtonListener.OnDecreaseButtonClicked += PlayDecreaseSound;
+        //UIButtonListener.OnIncreaseButtonClicked += PlayIncreaseSound;
+        //UIButtonListener.OnDecreaseButtonClicked += PlayDecreaseSound;
         Player.OnPaid += PlayPaySound;
-        Customer.OnCustomerLeft += (id) => PlayLeaveSound();
-        //CustomerManager.OnCustomerServed += PlayLikedSound;
+        Customer.CustomerLeft += PlayLeaveSound;
+        Customer.CustomerServed += PlayLikedSound;
     }
 
     public void PlayButtonSound() {
@@ -42,15 +42,15 @@ public class AudioManager : MonoBehaviour
         audio_source.Play();
     }
 
-    public void PlayIncreaseSound() {
-        audio_source.clip = increase_clip;
-        audio_source.Play();
-    }
+    //public void PlayIncreaseSound() {
+    //    audio_source.clip = increase_clip;
+    //    audio_source.Play();
+    //}
 
-    public void PlayDecreaseSound() {
-        audio_source.clip = decrease_clip;
-        audio_source.Play();
-    }
+    //public void PlayDecreaseSound() {
+    //    audio_source.clip = decrease_clip;
+    //    audio_source.Play();
+    //}
 
     public void PlayLikedSound() {
         audio_source_2.clip = liked_clip;

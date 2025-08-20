@@ -1,9 +1,14 @@
+using System;
 using UnityEngine;
 
 public class CustomerSpawner : MonoBehaviour {
     [SerializeField] private const int base_popularity = 5;
 
     [SerializeField] private Player Player;
+
+    public static event Action<float> SpawnDelayTimerTicked;
+    public static event Action<float> SpawnTimerTicked;
+    public static event Action NoCustomers;
 
     private int Popularity => base_popularity + Player.PlayerStats.Attraction;
     private int MaxCustomers => Popularity;
@@ -21,20 +26,18 @@ public class CustomerSpawner : MonoBehaviour {
     private void Start() {
         CustomerSpawnCount = 0;
         NextId = 1;
-        SpawnDelayTimer = new Timer(5f);
-        SpawnTimer = new Timer(SpawnInterval);
         CustomerQueue = new CustomerQueue();
 
-        SpawnDelayTimer.OnTimerElapsed += OnSpawnDelayTimerElapsed;
-        SpawnTimer.OnTimerElapsed += OnSpawnTimerElapsed;
-
-        SpawnDelayTimer.Start();
+        CreateTimers();
+        World.OnDayStart += StartDay;
+        World.OnDayEnd += EndDay;
     }
 
     private void Update() {
         SpawnDelayTimer.Tick();
         SpawnTimer.Tick();
         CustomerQueue.Update();
+        if (!CustomerQueue.HasCustomerInQueue && !CanSpawnMoreCustomers) NoCustomers?.Invoke();
     }
 
     public void OnSpawnDelayTimerElapsed() => SpawnTimer.Start();
@@ -42,9 +45,7 @@ public class CustomerSpawner : MonoBehaviour {
     
     private void SpawnCustomer() {
         Timer patienceTimer = new Timer(12f);
-        Customer customer = new Customer(NextId, patienceTimer);
-
-        Debug.Log($"Customer {NextId} spawned");
+        Customer customer = new Customer(patienceTimer);
 
         CustomerQueue.Enqueue(customer);
 
@@ -52,5 +53,39 @@ public class CustomerSpawner : MonoBehaviour {
         CustomerSpawnCount++;
 
         if (CanSpawnMoreCustomers) SpawnTimer.Restart();
+    }
+
+    void CreateTimers() {
+        SpawnDelayTimer = new Timer(5f);
+        SpawnTimer = new Timer(SpawnInterval);
+
+        SpawnDelayTimer.OnTimerElapsed += OnSpawnDelayTimerElapsed;
+        SpawnTimer.OnTimerElapsed += OnSpawnTimerElapsed;
+
+        SpawnDelayTimer.OnTimerTicked += SpawnDelayTimerTicked;
+        SpawnTimer.OnTimerTicked += SpawnTimerTicked;
+    }
+
+    void StopUpdating() {
+        enabled = false;
+    }
+
+    void StartUpdating() {
+        enabled = true;
+    }
+
+    public void StartDay() {
+        CustomerSpawnCount = 0;
+        NextId = 1;
+        CustomerQueue = new CustomerQueue();
+
+        CreateTimers();
+        SpawnDelayTimer.Start();
+        StartUpdating();
+    }
+
+    public void EndDay() {
+        CustomerQueue.UnbindCustomers();
+        StopUpdating();
     }
 }

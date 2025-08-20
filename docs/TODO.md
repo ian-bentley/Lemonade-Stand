@@ -1,6 +1,8 @@
 # TO DO List
 
 ## Pending Items
+[ ] Fix customer jitter with raycast
+[ ] Hook up customer spawner and customer queue to daytime and serving to replace the manager
 [ ] Convert to properties
 [ ] Make sure objects are reacting to their timers with events
 [ ] Change spawning to waves: amount in wave, duration, cooldown

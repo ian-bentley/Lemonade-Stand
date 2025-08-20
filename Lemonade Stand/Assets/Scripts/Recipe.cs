@@ -38,7 +38,7 @@ public class Recipe
     public int ServingsPerBatch { get; set; }
 
     public Recipe() {
-        LemonsCount = 0;
+        LemonsCount = 4;
         SugarCount = 0;
         IceCount = 0;
     }
