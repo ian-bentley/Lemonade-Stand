@@ -3,8 +3,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 
-public class DebugTool : MonoBehaviour
-{
+public class DebugTool : MonoBehaviour {
     [SerializeField] GameObject debug_canvas;
     [SerializeField] TextMeshProUGUI debug_text;
     bool debug_on;
@@ -16,6 +15,7 @@ public class DebugTool : MonoBehaviour
     string spawn_timer_text;
     string serve_timer_text;
     Dictionary<string, float> patience_timers;
+    private List<string> customer_order;
 
     private void OnEnable() {
         Player.OnServedChanged += SetServedText;
@@ -32,16 +32,17 @@ public class DebugTool : MonoBehaviour
     }
 
     private void OnDisable() {
-        Player.OnServedChanged += SetServedText;
-        Player.OnEarningsChanged += SetEarningsText;
-        Player.OnServeTimerTicked += SetServeTimerText;
-        World.OnDayTimerTicked += SetDayTimerText;
-        World.OnEndEarlyTimerTicked += SetEndEarlyTimerText;
-        CustomerSpawner.SpawnDelayTimerTicked += SetSpawnDelayTimerText;
-        CustomerSpawner.SpawnTimerTicked += SetSpawnTimerText;
-        CustomerQueue.CustomerAdded += AddPatienceTimer;
-        CustomerQueue.CustomerRemoved += RemovePatienceTimer;
-        Customer.OnPatienceTimerTicked += SetPatienceTimer;
+        Player.OnServedChanged -= SetServedText;
+        Player.OnEarningsChanged -= SetEarningsText;
+        Player.OnServeTimerTicked -= SetServeTimerText;
+        World.OnDayTimerTicked -= SetDayTimerText;
+        World.OnEndEarlyTimerTicked -= SetEndEarlyTimerText;
+        World.OnDayStart -= ClearPatienceTimers;
+        CustomerSpawner.SpawnDelayTimerTicked -= SetSpawnDelayTimerText;
+        CustomerSpawner.SpawnTimerTicked -= SetSpawnTimerText;
+        CustomerQueue.CustomerAdded -= AddPatienceTimer;
+        CustomerQueue.CustomerRemoved -= RemovePatienceTimer;
+        Customer.OnPatienceTimerTicked -= SetPatienceTimer;
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -50,6 +51,7 @@ public class DebugTool : MonoBehaviour
         debug_on = false;
 
         patience_timers = new Dictionary<string, float>();
+        customer_order = new List<string>();
     }
 
     // Update is called once per frame
@@ -66,9 +68,8 @@ public class DebugTool : MonoBehaviour
         debug_text.text += earnings_text;
         debug_text.text += "\nCustomers:\n";
 
-        var patience_timers_copy = patience_timers.OrderBy(i => i.Key);
-
-        foreach (var (id, currentTime) in patience_timers_copy) {
+        foreach (var id in customer_order) {
+            float currentTime = patience_timers[id];
             debug_text.text += $"[Customer {id}] Patience timer: {currentTime}\n";
         }
     }
@@ -88,15 +89,20 @@ public class DebugTool : MonoBehaviour
 
     void AddPatienceTimer(string id, float currentTime) {
         patience_timers.Add(id, currentTime);
+        customer_order.Add(id);
     }
 
     void RemovePatienceTimer(string id) {
         patience_timers.Remove(id);
+        customer_order.Remove(id);
     }
 
     void SetPatienceTimer(string id, float currentTime) {
         patience_timers[id] = currentTime;
     }
 
-    void ClearPatienceTimers() => patience_timers = new Dictionary<string, float>();
+    void ClearPatienceTimers() {
+        patience_timers.Clear();
+        customer_order.Clear();
+    }
 }

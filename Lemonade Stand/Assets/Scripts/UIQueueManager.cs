@@ -20,6 +20,7 @@ public class UIQueueManager : MonoBehaviour
 
     private void OnDisable() {
         CustomerQueue.QueueChanged -= OnQueueChanged;
+        World.OnDayStart -= OnDayStart;
         World.OnDayStart -= OnDayEnd;
     }
 

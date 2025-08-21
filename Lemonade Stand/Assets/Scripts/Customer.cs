@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 public class Customer
 {
@@ -10,7 +9,7 @@ public class Customer
     public static event Action CustomerLeft;
     public static event Action CustomerServed;
 
-    public string Id { get; } = System.Guid.NewGuid().ToString();
+    public string Id { get; } = Guid.NewGuid().ToString();
     public Timer PatienceTimer { get; }
 
     public Customer(Timer patienceTimer) {

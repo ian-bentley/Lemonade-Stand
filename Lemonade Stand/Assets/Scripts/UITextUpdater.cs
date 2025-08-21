@@ -5,16 +5,16 @@ public class UITextUpdater : MonoBehaviour
 {
     public static UITextUpdater Instance { get; private set; }
 
-    private void Awake() {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
+    //private void Awake() {
+    //    if (Instance != null && Instance != this)
+    //    {
+    //        Destroy(gameObject);
+    //        return;
+    //    }
 
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-    }
+    //    Instance = this;
+    //    DontDestroyOnLoad(gameObject);
+    //}
 
     // common text
     [SerializeField] public TextMeshProUGUI cash_text;

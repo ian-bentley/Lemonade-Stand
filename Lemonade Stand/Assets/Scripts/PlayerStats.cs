@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class PlayerStats
 {
     public int Attraction { get; set; }

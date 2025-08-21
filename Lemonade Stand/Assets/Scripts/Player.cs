@@ -1,6 +1,11 @@
 using System;
 using UnityEngine;
 
+public enum PlayerState {
+    Idle,
+    Running,
+}
+
 public class Player : MonoBehaviour {
     public static event Action<decimal> OnCashChanged;
     public static event Action<decimal> OnLemonadePriceChanged;
@@ -59,11 +64,26 @@ public class Player : MonoBehaviour {
     public int Servings { get; private set; }
     public int ServingsPerBatch {  get; private set; }
     private Customer ServingCustomer { get; set; }
+    private PlayerState PlayerState { get; set; }
+
+    private void OnEnable() {
+        World.OnDayStart += StartDay;
+        World.OnDayEnd += EndDay;
+        SupplyShop.OnPurchaseRequested += TryPurchase;
+        Customer.Order += StartServing;
+    }
+
+    private void OnDisable() {
+        World.OnDayStart -= StartDay;
+        World.OnDayEnd -= EndDay;
+        SupplyShop.OnPurchaseRequested -= TryPurchase;
+        Customer.Order -= StartServing;
+    }
 
     private void Start() {
         Cash = 20m; // set starting cash to $20
         LemonadePrice = 1.50m; // set starting price to $1.50
-        ServeInterval = 3f; // set starting serve interval to 3s
+        ServeInterval = 1.5f; // set starting serve interval to 3s
         Earnings = 0m; // start at 0 earnings
         Served = 0; // start at 0 served
         Servings = 0;
@@ -74,25 +94,13 @@ public class Player : MonoBehaviour {
 
         Recipe.ServingsPerBatch = ServingsPerBatch;
 
-        CreateTimers();
-
-        World.OnDayStart += StartDay;
-        World.OnDayEnd += Inventory.ExpireStock;
-        World.OnDayEnd += EndDay;
-        SupplyShop.OnPurchaseRequested += TryPurchase;
-        Customer.Order += StartServing;
+        PlayerState = PlayerState.Idle;
     }
 
     private void Update() {
+        if (PlayerState == PlayerState.Idle) return;
+
         ServeTimer.Tick();
-    }
-
-    void StopUpdating() {
-        enabled = false;
-    }
-
-    void StartUpdating() {
-        enabled = true;
     }
 
     void CreateTimers() {
@@ -108,13 +116,18 @@ public class Player : MonoBehaviour {
         Inventory.CupsCount = 999;
 
         CreateTimers();
-        StartUpdating();
+        PlayerState = PlayerState.Running;
     }
 
     public void EndDay() {
-        OnServe -= ServingCustomer.OnPlayerServe;
-        ServingCustomer = null;
-        StopUpdating();
+        if (ServingCustomer  != null) {
+            OnServe -= ServingCustomer.OnPlayerServe;
+            ServingCustomer = null;
+        }
+
+        ServeTimer.OnTimerElapsed -= Serve;
+        ServeTimer.OnTimerTicked -= OnServeTimerTicked;
+        PlayerState = PlayerState.Idle;
     }
 
     public void StartServing(Customer customer) {

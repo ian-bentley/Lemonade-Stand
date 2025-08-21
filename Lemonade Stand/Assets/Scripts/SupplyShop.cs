@@ -6,8 +6,12 @@ public class SupplyShop : MonoBehaviour {
 
     public static event Action<PurchaseRequest> OnPurchaseRequested;
 
-    private void Start() {
+    private void OnEnable() {
         UIButtonListener.OnSupplyShopButtonClicked += BuyLemons;
+    }
+
+    private void OnDisable() {
+        UIButtonListener.OnSupplyShopButtonClicked -= BuyLemons;
     }
 
     void BuyLemons() {

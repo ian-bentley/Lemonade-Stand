@@ -1,6 +1,11 @@
 using System;
 using UnityEngine;
 
+public enum CustomerSpawnerState {
+    Idle,
+    Running
+}
+
 public class CustomerSpawner : MonoBehaviour {
     [SerializeField] private const int base_popularity = 5;
 
@@ -20,23 +25,31 @@ public class CustomerSpawner : MonoBehaviour {
     private Timer SpawnDelayTimer { get; set; }
     private Timer SpawnTimer { get; set; }
     private CustomerQueue CustomerQueue { get; set; }
+    private CustomerSpawnerState CustomerSpawnerState { get; set; }
 
-    int NextId { get; set; }
-
-    private void Start() {
-        CustomerSpawnCount = 0;
-        NextId = 1;
-        CustomerQueue = new CustomerQueue();
-
-        CreateTimers();
+    private void OnEnable() {
         World.OnDayStart += StartDay;
         World.OnDayEnd += EndDay;
     }
 
+    private void OnDisable() {
+        World.OnDayStart -= StartDay;
+        World.OnDayEnd -= EndDay;
+    }
+
+    private void Start() {
+        CustomerSpawnCount = 0;
+        CustomerSpawnerState = CustomerSpawnerState.Idle;
+        CustomerQueue = new CustomerQueue();
+    }
+
     private void Update() {
+        if (CustomerSpawnerState == CustomerSpawnerState.Idle) return;
+
         SpawnDelayTimer.Tick();
         SpawnTimer.Tick();
         CustomerQueue.Update();
+
         if (!CustomerQueue.HasCustomerInQueue && !CanSpawnMoreCustomers) NoCustomers?.Invoke();
     }
 
@@ -48,8 +61,6 @@ public class CustomerSpawner : MonoBehaviour {
         Customer customer = new Customer(patienceTimer);
 
         CustomerQueue.Enqueue(customer);
-
-        NextId++;
         CustomerSpawnCount++;
 
         if (CanSpawnMoreCustomers) SpawnTimer.Restart();
@@ -66,26 +77,21 @@ public class CustomerSpawner : MonoBehaviour {
         SpawnTimer.OnTimerTicked += SpawnTimerTicked;
     }
 
-    void StopUpdating() {
-        enabled = false;
-    }
-
-    void StartUpdating() {
-        enabled = true;
-    }
-
     public void StartDay() {
         CustomerSpawnCount = 0;
-        NextId = 1;
         CustomerQueue = new CustomerQueue();
 
         CreateTimers();
         SpawnDelayTimer.Start();
-        StartUpdating();
+        CustomerSpawnerState = CustomerSpawnerState.Running;
     }
 
     public void EndDay() {
+        SpawnDelayTimer.OnTimerElapsed -= OnSpawnDelayTimerElapsed;
+        SpawnTimer.OnTimerElapsed -= OnSpawnTimerElapsed;
+        SpawnDelayTimer.OnTimerTicked -= SpawnDelayTimerTicked;
+        SpawnTimer.OnTimerTicked -= SpawnTimerTicked;
         CustomerQueue.UnbindCustomers();
-        StopUpdating();
+        CustomerSpawnerState = CustomerSpawnerState.Idle;
     }
 }

@@ -10,6 +10,8 @@ public class DevConsole : MonoBehaviour {
 
     private Dictionary<string, Action<string[]>> commands;
 
+    public static event Action<string> Printed;
+
     private void Start() {
 
         // define commands and actions
@@ -51,7 +53,7 @@ public class DevConsole : MonoBehaviour {
 
         // if the command doesn't exist, show that command is not recognized
         if (!commands.TryGetValue(command, out var action)) {
-            Debug.LogError($"Unknown command: '{command}'");
+            Print($"Unknown command: '{command}'");
             return;
         }
 
@@ -70,7 +72,7 @@ public class DevConsole : MonoBehaviour {
 
         // if missing the count and name, show that they are missing
         if (args.Length < 1) {
-            Debug.LogError("Unexpected command: set expects <name> <value>");
+            Print("Unexpected command: set expects <name> <value>");
             return;
         }
 
@@ -78,13 +80,13 @@ public class DevConsole : MonoBehaviour {
 
         // if name is not known, show error
         if (!names.TryGetValue(name, out var action)) {
-            Debug.LogError($"Unknown name: set <name> has no name '{name}'");
+            Print($"Unknown name: set <name> has no name '{name}'");
             return;
         }
 
         // if missing the count, show that count is missing
         if (args.Length < 2) {
-            Debug.LogError("Unexpected command: set <name> expects <value>");
+            Print("Unexpected command: set <name> expects <value>");
             return;
         }
 
@@ -92,10 +94,11 @@ public class DevConsole : MonoBehaviour {
 
         // if value is not a number, show error
         if (!int.TryParse(value, out int amount)) {
-            Debug.LogError($"Unexpected value: set <name> '{value}' is not a valid number");
+            Print($"Unexpected value: set <name> '{value}' is not a valid number");
             return;
         }
 
+        Print($"set {name} to {value}");
         action.Invoke(amount); // set name to value
     }
 
@@ -104,5 +107,7 @@ public class DevConsole : MonoBehaviour {
     //private void SetIce(int amount) => player.Inventory.IceCount = amount;
     private void SetCups(int amount) => player.Inventory.CupsCount = amount;
     private void SetCash(int amount) => player.Cash = (decimal) amount;
-    private void SetAttraction(int amount) => player.PlayerStats.Attraction = amount; 
+    private void SetAttraction(int amount) => player.PlayerStats.Attraction = amount;
+
+    private void Print(string message) => Printed?.Invoke(message);
 }

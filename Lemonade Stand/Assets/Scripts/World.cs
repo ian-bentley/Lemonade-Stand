@@ -1,6 +1,11 @@
 using System;
 using UnityEngine;
 
+public enum DayState {
+    Idle,
+    Running
+}
+
 public class World : MonoBehaviour {
     public static event Action<int> OnDayCountChanged;
     public static event Action<float> OnDayTimerTicked;
@@ -23,26 +28,30 @@ public class World : MonoBehaviour {
     public const float day_duration = 180f;// how many seconds is one day, set to 180s
     public const float end_early_timer_duration = 5f; // how long end early timer goes, set to 5s
 
-    private void Start() {
-        DayCount = 1; // start at first day
-        CreateTimers();
+    private DayState DayState { get; set; }
 
+    private void OnEnable() {
         UIButtonListener.OnStartButtonClicked += StartDay;
         CustomerSpawner.NoCustomers += EndEarly;
         Player.OutOfStock += EndEarly;
     }
 
+    private void OnDisable() {
+        UIButtonListener.OnStartButtonClicked -= StartDay;
+        CustomerSpawner.NoCustomers -= EndEarly;
+        Player.OutOfStock -= EndEarly;
+    }
+
+    private void Start() {
+        DayCount = 1; // start at first day
+        DayState = DayState.Idle;
+    }
+
     private void Update() {
+        if (DayState == DayState.Idle) return;
+
         DayTimer.Tick();
         EndEarlyTimer.Tick();
-    }
-
-    void StopUpdating() {
-        enabled = false;
-    }
-
-    void StartUpdating() {
-        enabled = true;
     }
 
     public void CreateTimers() {
@@ -59,13 +68,17 @@ public class World : MonoBehaviour {
     {
         CreateTimers();
         DayTimer.Start();
-        StartUpdating();
+        DayState = DayState.Running;
         OnDayStart?.Invoke();
     }
 
     void EndDay() {
+        DayTimer.OnTimerTicked -= OnDayTimerTicked;
+        EndEarlyTimer.OnTimerTicked -= OnEndEarlyTimerTicked;
+        DayTimer.OnTimerElapsed -= EndDay;
+        EndEarlyTimer.OnTimerElapsed -= EndDay;
         RaiseDayCounter();
-        StopUpdating();
+        DayState = DayState.Idle;
         OnDayEnd?.Invoke();
     }
 

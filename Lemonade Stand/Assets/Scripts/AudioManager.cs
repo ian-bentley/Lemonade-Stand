@@ -22,6 +22,16 @@ public class AudioManager : MonoBehaviour
         Customer.CustomerServed += PlayLikedSound;
     }
 
+    private void OnDisable() {
+        UIButtonListener.OnMenuButtonClicked -= PlayButtonSound;
+        UIButtonListener.OnBuyButtonClicked -= PlayBuySound;
+        //UIButtonListener.OnIncreaseButtonClicked -= PlayIncreaseSound;
+        //UIButtonListener.OnDecreaseButtonClicked -= PlayDecreaseSound;
+        Player.OnPaid -= PlayPaySound;
+        Customer.CustomerLeft -= PlayLeaveSound;
+        Customer.CustomerServed -= PlayLikedSound;
+    }
+
     public void PlayButtonSound() {
         audio_source.clip = button_clip;
         audio_source.Play();

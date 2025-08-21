@@ -50,6 +50,8 @@ public class Inventory
         SugarCount = 0;
         IceCount = 0;
         CupsCount = 999;
+
+        World.OnDayEnd += ExpireStock;
     }
 
     public bool HasBatchStock(Recipe recipe) => LemonsCount >= recipe.LemonsCount && SugarCount >= recipe.SugarCount;
